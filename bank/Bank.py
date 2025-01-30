@@ -1,8 +1,12 @@
 import csv
+import random
+from tkinter.constants import BROWSE
+
 
 class Bank:
-    def __init__(self, n_account, balance=0):
+    def __init__(self, n_account, password, balance=0):
         self.n_account = n_account
+        self.password = password
         self._balance = balance
 
     @property
@@ -19,10 +23,35 @@ class Bank:
 
         self._n_account = n_account
 
+    @property
+    def password(self):
+        return self._password
+
+    @password.setter
+    def password(self, password):
+        if str(password).isnumeric() or str(password).isalpha():
+            raise ValueError('This password have number and words')
+        if len(password) != 6:
+            raise ValueError('This password have 6 elements')
+        self._password = password
+
     @classmethod
-    def get(cls):
-        num_account = input('Number of account: ')
-        return cls(num_account)
+    def create(cls):
+        nums = (1, 2, 3, 4, 5, 6, 7, 8, 9)
+        num_account = ''
+        for _ in range(8):
+            nums_account = random.choices(nums, k=8)
+
+        num_account = ''.join(map(str, nums_account))
+
+        psswrd = input('Password: ')
+        password = input('Confirm: ')
+        while password != password:
+            print('Password incorrect!')
+            psswrd = input('Password: ')
+            password = input('Confirm: ')
+
+        return cls(num_account, password)
 
     def check(self):
         with open('accounts.csv', 'r') as file:
@@ -30,37 +59,56 @@ class Bank:
             for row in reader:
 
                 if self.n_account in row:
-                    r = input('This account has exist, you want make a deposit here? ')
 
-                    while r.upper() not in 'YN':
-                        r = input('This account has exist, you want make a deposit here? ')
+                    password = input('This account has exist, write a password: ')
 
-                    if r.upper() in 'Y':
-                        self.deposit(int(input('Valor: ')))
+                    if password == self._password:
 
-                    elif r.upper() in 'N':
-                        r = input('You want make a windrow here?[Y/N] ')
+                        r = input('You want make a deposit here? ')
 
-                        while r.upper() not in 'YS':
-                            r = input('You want make a windrow here?[Y/N] ')
+                        while r.upper() not in 'YN':
+                            r = input('This account has exist, you want make a deposit here? ')
 
                         if r.upper() in 'Y':
                             self.deposit(int(input('Valor: ')))
-                        else:
-                            print('Create a new account for progress')
+
+                        elif r.upper() in 'N':
+                            r = input('You want make a windrow here?[Y/N] ')
+
+                            while r.upper() not in 'YS':
+                                r = input('You want make a windrow here?[Y/N] ')
+
+                            if r.upper() in 'Y':
+                                self.deposit(int(input('Valor: ')))
+                            else:
+                                print('Create a new account for progress')
+
+                    else:
+                        raise ValueError('Invalid Password')
 
     def append(self):
-        with open('accounts.csv', 'r') as file:
-            reader = csv.reader(file)
-            for row in reader:
-                if self.n_account in row:
-                    raise ValueError('This number of account has exist')
+        with open('accounts.csv', "r", newline="", encoding="utf-8") as csvfile:
+            reader = list(csv.reader(csvfile))
+            header = reader[0]
+            linhas = reader[1:]
 
-        with open('accounts.csv', '+a') as file:
-            header = ['Number Account', 'Balance']
-            writer = csv.DictWriter(file, fieldnames=header)
-            writer.writeheader()
-            writer.writerow({'Number Account': self.n_account, 'Balance': self._balance})
+        nova_lista = []
+        balance = 0
+
+        for row in linhas:
+            if str(self.n_account) == row[0]:
+                balance = float(row[2])
+            else:
+                nova_lista.append(row)
+
+        with open('accounts.csv', "w", newline="", encoding="utf-8") as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(header)
+            writer.writerows(nova_lista)
+
+        with open('accounts.csv', "a", newline="", encoding="utf-8") as file:
+            writer = csv.writer(file)
+            writer.writerow([self.n_account, self.password, self._balance + balance])
 
 
     def deposit(self, n):

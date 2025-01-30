@@ -1,2 +1,4 @@
-Number Account,Balance
-12345678,900
+Number account,Password,Balance
+12345678,12ar12,360.0
+87654321,11ar11,900.0
+16121222,22ar22,0
