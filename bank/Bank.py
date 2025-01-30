@@ -1,7 +1,10 @@
+'''Implementar o nome do cliente,
+ validação via email,
+  usar regex'''
+
+
 import csv
 import random
-from tkinter.constants import BROWSE
-
 
 class Bank:
     def __init__(self, n_account, password, balance=0):
@@ -90,26 +93,25 @@ class Bank:
         with open('accounts.csv', "r", newline="", encoding="utf-8") as csvfile:
             reader = list(csv.reader(csvfile))
             header = reader[0]
-            linhas = reader[1:]
+            rows = reader[1:]
 
-        nova_lista = []
+        new_list = []
         balance = 0
 
-        for row in linhas:
+        for row in rows:
             if str(self.n_account) == row[0]:
                 balance = float(row[2])
             else:
-                nova_lista.append(row)
+                new_list.append(row)
 
         with open('accounts.csv', "w", newline="", encoding="utf-8") as csvfile:
             writer = csv.writer(csvfile)
             writer.writerow(header)
-            writer.writerows(nova_lista)
+            writer.writerows(new_list)
 
         with open('accounts.csv', "a", newline="", encoding="utf-8") as file:
             writer = csv.writer(file)
             writer.writerow([self.n_account, self.password, self._balance + balance])
-
 
     def deposit(self, n):
         self._balance += n
