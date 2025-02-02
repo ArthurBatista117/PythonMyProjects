@@ -10,10 +10,12 @@ def main():
     while solicitation not in '12':
         solicitation = input('-> ')
 
+
     if solicitation == '1':
-        account = Bank.get()
+        user = input('Write your email: ')
+        password = input('Password: ')
+        account = Bank(user,password=password)
         account.check()
-        account.append()
     if solicitation == '2':
         account = Bank.create()
         account.append()
